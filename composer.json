@@ -1,0 +1,21 @@
+{
+  "name": "ladavinash17/api-client",
+  "type": "library",
+  "description": "Api client is PHP based HTTP Client used for hitting your api and getting response",
+  "keywords": ["api", "http", "rest", "web service", "curl", "client", "HTTP client"],
+  "homepage": "https://github.com/ladavinash17/api-client",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Avinash Lad",
+      "email": "ladavinash17@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": { "ApiClient\\": "src/" }
+  },
+  "require": {
+    "php": ">=5.4.0",
+    "guzzlehttp/guzzle": ">=6.0"
+  }
+}
