@@ -15,7 +15,6 @@ use GuzzleHttp\Exception\ServerException;
 
 class BaseApi
 {
-    private $config;
     private $url;
     private $method;
     private $headers;
@@ -25,53 +24,27 @@ class BaseApi
     private $response;
     private $statusCode;
     private $responseHeaders;
-    private $isDefaultHeaders;
 
-    public function __construct()
+    public function __construct(array $options)
     {
-        $this->config = $this->get('config')->get('api');
-        $this->client = new Client([
-            'timeout' => $this->config['connection_timeout']
-        ]);
+        $this->client = new Client(
+            [
+                'timeout' => $options['connection_timeout'],
+            ]
+        );
 
-        $this->setIsDefaultHeaders($this->config['is_default_headers']);
-    }
+        /** Setting default headers */
+        $defaultHeaders = [
+            'accept'       => 'application/json',
+            'content-type' => 'application/json',
+        ];
 
-    /**
-     * @return array
-     */
-    protected function getConfig()
-    {
-        return $this->config;
-    }
-
-    public function setDefaultHeaders() {
-        $defaultHeaders = $this->config['default_headers'];
-
-        if(!empty($defaultHeaders)) {
-            foreach($defaultHeaders as $key => $value) {
-                $this->headers[str_replace("_", "-", $key)] = $value;
-            }
+        /** Adding headers from config/parameters to default headers */
+        if (isset($options['headers']) && !empty($options['headers'])) {
+            $defaultHeaders = array_merge($defaultHeaders, $options['headers']);
         }
-    }
 
-    /**
-     * @return boolean
-     */
-    public function getIsDefaultHeaders()
-    {
-        return $this->isDefaultHeaders;
-    }
-
-    /**
-     * @param boolean $isDefaultHeaders
-     */
-    public function setIsDefaultHeaders($isDefaultHeaders)
-    {
-        $this->isDefaultHeaders = (boolean) $isDefaultHeaders;
-        if($this->isDefaultHeaders === true) {
-            $this->setDefaultHeaders();
-        }
+        $this->setHeaders($defaultHeaders);
     }
 
     /**
@@ -119,16 +92,18 @@ class BaseApi
      */
     public function setHeaders($headers)
     {
-        $this->headers = $headers;
+        foreach ($headers as $key => $value) {
+            $this->setHeader($key, $value);
+        }
     }
 
     /**
      * @param string $key
-     * @param mixed $value
+     * @param mixed  $value
      */
     public function setHeader($key, $value)
     {
-        $this->headers[$key] = $value;
+        $this->headers[str_replace("_", "-", $key)] = $value;
     }
 
     /**
@@ -156,11 +131,26 @@ class BaseApi
     }
 
     /**
-     * @param mixed $query
+     * @param $key
+     * @param $value
+     *
+     * @return mixed
      */
-    public function setQuery($query)
+    public function setQuery($key, $value)
     {
-        $this->query = $query;
+        $this->query[$key] = $value;
+
+        return $this;
+    }
+
+
+    protected function addQueries(array $query = [])
+    {
+        foreach ($query as $key => $value) {
+            $this->setQuery($key, $value);
+        }
+
+        return $this;
     }
 
     /**
@@ -190,21 +180,35 @@ class BaseApi
     protected function exec()
     {
         try {
-            $this->response = $this->client->request(
+
+            $response = $this->client->request(
                 $this->getMethod(),
                 $this->getUrl(),
                 [
                     'headers' => $this->getHeaders(),
-                    'query' => $this->getQuery(),
-                    'body' => $this->getBody()
+                    'query'   => $this->getQuery(),
+                    'body'    => $this->getBody(),
                 ]
             );
+
+            $this->response        = $response->getBody()->getContents();
+            $this->statusCode      = $response->getStatusCode();
+            $this->responseHeaders = $response->getHeaders();
+
         } catch (ClientException $e) {
+            echo 1;
+            exit;
             $this->response   = $e->getResponse()->getBody()->getContents();
             $this->statusCode = 400;
-            //var_dump($this->getUrl(), $this->getBody());
         } catch (ServerException $e) {
-            echo ($e->getResponse()->getBody()->getContents());
+            echo 1;
+            exit;
+            echo($e->getResponse()->getBody()->getContents());
+            exit;
+        } catch (\Exception $e) {
+            echo 1;
+            exit;
+            echo($e->getCode() . ": " . $e->getMessage());
             exit;
         }
     }
