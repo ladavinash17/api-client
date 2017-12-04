@@ -1,5 +1,6 @@
 {
   "name": "ladavinash17/api-client",
+  "vendor/package": "1.0.0",
   "type": "library",
   "description": "Api client is PHP based HTTP Client used for hitting your api and getting response",
   "keywords": ["api", "http", "rest", "web service", "curl", "client", "HTTP client"],
