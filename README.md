@@ -1,8 +1,6 @@
 ApiClient, PHP HTTP client
 ==========================
 
-[![Build Status](https://travis-ci.org/guzzle/guzzle.svg?branch=master)](https://travis-ci.org/guzzle/guzzle)
-
 ApiClient is a PHP HTTP client that makes it easy to send HTTP requests and
 trivial to integrate with web services.
 
