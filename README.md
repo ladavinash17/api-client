@@ -50,7 +50,7 @@ parameters:
         allowed_methods:      ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
 
         your_project_key:
-            host:     "http://your-domain.com"
+            host:     "http://your-domain.com/"
             headers:
                 #You can mention key-value pair here,
                 # internal code will replace "_" with "-" in key
@@ -63,9 +63,9 @@ In above yaml file, ``api_client``, ``connection_timeout``, ``allowed_methods``,
 To set those basic parameters you just need to pass the above array to ApiClient().
 For Eg:
 ```php
-//$apiOptions is the array from the above paramaters.yaml.
-$apiOptions = $container->getParameter('api_client');
-$apiClient = new ApiClient($apiOptions, 'your_project_key');
+//$apiConfig is the array from the above parameters.yaml/api.yaml.
+$apiConfig = $container->getParameter('api_client');
+$apiClient = new ApiClient($apiConfig, 'your_project_key');
 return $apiClient->get(
     '/v1/products',             // Route endpoint
     [],                         // url parameters to be replaced in route endpoint

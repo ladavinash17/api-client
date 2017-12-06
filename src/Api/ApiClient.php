@@ -79,7 +79,6 @@ class ApiClient extends BaseApi
 
     public function __call($method, $arguments)
     {
-
         if (!$this->checkIfMethodAllowed($method)) {
             return null;
         }
